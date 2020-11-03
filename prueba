@@ -15,12 +15,19 @@ fi
 currentcant=$(( $(ls ~/.logs | wc -l) -1 ))
 echo $currentcant y $cant
 
-if [ $cant -eq $currentcant ];
-then
-	file=$(find ~/.logs -type f -name log* -printf '%f\n' | sort | head -n 1)
-	rm ~/.logs/$file
+#if [ $cant -eq $currentcant ];
+#then
+#	file=$(find ~/.logs -type f -name log* -printf '%f\n' | sort | head -n 1)
+#	rm ~/.logs/$file
+#	echo Borrado
+#fi
+
+while [[ "$currentcant" -gt "$((cant - 1))" ]]; do
 	echo Borrado
-fi
+        file=$(find ~/.logs -type f -name log* -printf '%f\n' | sort | head -n 1)
+        rm ~/.logs/$file
+	currentcant=$((currentcant - 1))
+done
 
 if [ ! -d "~/.logs" ];
 then
