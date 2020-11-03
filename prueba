@@ -1,0 +1,33 @@
+#!/bin/bash
+fecha=$(date +%y%m%d%H%M%S)
+
+if [ -n "$2" ];
+then
+	rm ~/.logs/config
+	touch ~/.logs/config
+	echo $2 >> ~/.logs/config
+	cant=$2	
+elif [ ! -e "~/.logs/config" ]; 
+then
+	cant=$( cat ~/.logs/config)
+fi
+
+currentcant=$(( $(ls ~/.logs | wc -l) -1 ))
+echo $currentcant y $cant
+
+if [ $cant -eq $currentcant ];
+then
+	file=$(find ~/.logs -type f -name log* -printf '%f\n' | sort | head -n 1)
+	rm ~/.logs/$file
+	echo Borrado
+fi
+
+if [ ! -d "~/.logs" ];
+then
+	mkdir -p ~/.logs	
+fi
+
+if [ -d "$1" ];
+then
+	tar -czf ~/.logs/log_$fecha.tar.gz $1
+fi
