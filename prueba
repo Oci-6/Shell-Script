@@ -1,27 +1,74 @@
 #!/bin/bash
 fecha=$(date +%y%m%d%H%M%S)
 
+
+
+
+
+comp=
+dir=~/.logs
+
+while [[ -n "$1" ]]; do
+    case "$1" in
+        -c | --compress)
+            shift
+	    comp=$1
+    ;;
+        -q | --quantity)
+            shift
+	    cant=$1
+    ;;
+    -d | --directory)
+	    shift
+	    dir=$(pwd)$1   
+    ;;
+    *)
+        exit 1
+    ;;
+    esac
+    shift
+done
+
+cant=quantity "$dir" "$cant"
+main "$dir" "$cant" "$comp"
+
+
+
+
+
+
+
 #Setting Up
+
+quantity () {
 if [ -n "$2" ];
 then
-	rm ~/.logs/config
-	touch ~/.logs/config
-	echo $2 >> ~/.logs/config
+	rm $1/config
+	touch $1/config
+	echo $2 >> $1/config
 	cant=$2	
-elif [ ! -e "~/.logs/config" ]; 
+elif [ ! -e "$1/config" ]; 
 then
-	cant=$( cat ~/.logs/config)
+	cant=$( cat $1/config)
+fi
+return cant
+}
+
+
+main () {
+
+dir=$1
+cant=$2
+comp=$3
+
+if [ ! -e "$dir/.logception" ];
+then
+        touch $dir/.logception
 fi
 
-
-if [ ! -e "~/.logs/.logception" ];
+if [ ! -d "$dir" ];
 then
-        touch ~/.logs/.logception
-fi
-
-if [ ! -d "~/.logs" ];
-then
-        mkdir -p ~/.logs
+        mkdir -p $dir
 fi
 
 
@@ -42,15 +89,18 @@ echo $currentcant y $cant
 
 while [[ "$currentcant" -gt "$((cant - 1))" ]]; do
 	echo Borrado
-        file=$(find ~/.logs -type f -name log* -printf '%f\n' | sort | head -n 1)
-        rm ~/.logs/$file
-	echo Borrado $file en $(date +%d-%m-%y) a las $(date +%H:%M:%S)  >> ~/.logs/.logception
+        file=$(find $dir -type f -name log* -printf '%f\n' | sort | head -n 1)
+        echo $dir
+	echo $file
+	rm $dir/$file
+	echo Borrado $file en $(date +%d-%m-%y) a las $(date +%H:%M:%S)  >> $dir/.logception
 	currentcant=$((currentcant - 1))
 done
 
 #Comprimido
 
-if [ -d "$1" ];
+if [ -d "$comp" ];
 then
-	tar -czf ~/.logs/log_$fecha.tar.gz $1
+	tar -czf $dir/log_$fecha.tar.gz $comp
 fi
+}
